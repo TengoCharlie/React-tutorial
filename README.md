@@ -18,7 +18,7 @@ In HTML, form elements such as <input>, <textarea>, and <select> typically maint
 
 We can combine the two by making the React state be the “single source of truth”. Then the React component that renders a form also controls what happens in that form on subsequent user input. An input form element whose value is controlled by React in this way is called a “controlled component”.
 
-### Option drop down in HTML and JSX
+## Option drop down in HTML and JSX
 
 Note that the Coconut option is initially selected, because of the selected attribute. React, instead of using this selected attribute, uses a value attribute on the root select tag. This is more convenient in a controlled component because you only need to update it in one place
 
@@ -32,9 +32,8 @@ Note that the Coconut option is initially selected, because of the selected attr
   <option value="mango">Mango</option>
 </select>;
 
-// ---------------------------------In JSX-------------------------
-
 class FlavorForm extends React.Component {
+  //In jsx
   constructor(props) {
     super(props);
     this.state = { value: "coconut" };
@@ -71,9 +70,9 @@ class FlavorForm extends React.Component {
 }
 ```
 
-#### `<select multiple={true} value={['B', 'C']}>`
+## `<select multiple={true} value={['B', 'C']}>`
 
-### Handle Multiple inputs in Form
+## Handle Multiple inputs in Form
 
 When you need to handle multiple controlled input elements, you can add a name attribute to each element and let the handler function choose what to do based on the value of `event.target.name`.
 
@@ -92,7 +91,7 @@ this.setState(partialState);
 
 Also, since setState() automatically merges a partial state into the current state, we only needed to call it with the changed parts.
 
-### Controlled Input Null Value
+## Controlled Input Null Value
 
 Specifying the value prop on a controlled component prevents the user from changing the input unless you desire so. If you’ve specified a value but the input is still editable, you may have accidentally set value to undefined or null.
 
