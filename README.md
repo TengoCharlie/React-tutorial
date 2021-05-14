@@ -14,11 +14,11 @@ This form has the default HTML form behavior of browsing to a new page when the 
 
 ## Controlled Components
 
-In HTML, form elements such as <input>, <textarea>, and <select> typically maintain their own state and update it based on user input. In React, mutable state is typically kept in the state property of components, and only updated with `setState()`.
+In HTML, form elements such as `<input>`, `<textarea>`, and `<select>` typically maintain their own state and update it based on user input. In React, mutable state is typically kept in the state property of components, and only updated with `setState()`.
 
 We can combine the two by making the React state be the “single source of truth”. Then the React component that renders a form also controls what happens in that form on subsequent user input. An input form element whose value is controlled by React in this way is called a “controlled component”.
 
-## Option drop down in HTML and JSX
+### Option drop down in HTML and JSX
 
 Note that the Coconut option is initially selected, because of the selected attribute. React, instead of using this selected attribute, uses a value attribute on the root select tag. This is more convenient in a controlled component because you only need to update it in one place
 
@@ -30,10 +30,11 @@ Note that the Coconut option is initially selected, because of the selected attr
     Coconut
   </option>
   <option value="mango">Mango</option>
-</select>;
+</select>
+```
 
+```javascript
 class FlavorForm extends React.Component {
-  //In jsx
   constructor(props) {
     super(props);
     this.state = { value: "coconut" };
