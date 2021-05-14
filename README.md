@@ -1,31 +1,8 @@
-# Conditional Rendering
+## Preventing Component from Rendering
 
-## Other way to emmbedd conditions in JSX
+In rare cases you might want a component to hide itself even though it was rendered by another component. To do this return null instead of its render output.
 
-```javascript
-function Mailbox(props) {
-  const unreadMessages = props.unreadMessages;
-  return (
-    <div>
-      <h1>Hello!</h1>
-      {unreadMessages.length > 0 && (
-        <h2>You have {unreadMessages.length} unread messages.</h2>
-      )}
-    </div>
-  );
-}
+In the example below, the `<WarningBanner />` is rendered depending on the value of the prop called warn. If the value of the prop is false, then the component does not render:
 
-const messages = ["React", "Re: React", "Re:Re: React"];
-ReactDOM.render(
-  <Mailbox unreadMessages={messages} />,
-  document.getElementById("root")
-);
-```
-
-It works because in JavaScript, true && expression always evaluates to expression, and false && expression always evaluates to false.
-
-Therefore, if the condition is true, the element right after && will appear in the output. If it is false, React will ignore and skip it.
-
-## Inline If-Else with Conditional Operator
-
-Another method for conditionally rendering elements inline is to use the JavaScript conditional operator `condition ? true : false`
+Returning `null` from a component’s render method does not affect the firing of the component’s lifecycle methods. For instance
+`componentDidUpdate` will still be called.
