@@ -23,6 +23,6 @@ if [ "$commitMessageTemp" != "" ]; then
     commitMessage=$commitMessageTemp
 fi
 
+echo -e $branchName
 git add $addFileDefault
 git commit -m "$commitMessage"
-echo -e $branchName
