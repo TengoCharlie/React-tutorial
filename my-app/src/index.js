@@ -15,6 +15,11 @@ function tick() {
 }
 
 setInterval(tick, 1000);
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 11295ef108e336023be427e998e2169ba970a972
 // ReactDOM.render(
 //   <React.StrictMode>
 //     <App />
