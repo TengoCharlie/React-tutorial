@@ -16,7 +16,6 @@ function tick() {
 
 setInterval(tick, 1000);
 
-setInterval(tick, 1000);
 
 // ReactDOM.render(
 //   <React.StrictMode>
