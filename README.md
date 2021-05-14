@@ -1,22 +1,53 @@
-Props are read only they are pure function because they will not trying to change there own inputs
+## do not mdify state directly, use setState() to modify
 
-All React components must act like pure functions with respect to their props.
+The only place where you can assign this.state is the constructor.
 
-In this section, we will learn how to make the Clock component truly reusable and encapsulated. It will set up its own timer and update itself every second.
+## React may batch multiple setState() calls into a single update for performance.
 
-#Adding Lifecycle Methods to a Class
-In applications with many components, it’s very important to free up resources taken by the components when they are destroyed.
+Because this.props and this.state may be updated asynchronously, you should not rely on their values for calculating the next state.
 
-We want to set up a timer whenever the Clock is rendered to the DOM for the first time. This is called “mounting” in React.
+# Some example of multiple update:
 
-We also want to clear that timer whenever the DOM produced by the Clock is removed. This is called “unmounting” in React.
+// Wrong
+` this.setState({ counter: this.state.counter + this.props.increment, });`
+To fix it, use a second form of setState() that accepts a function rather than an object. That function will receive the previous state as the first argument, and the props at the time the update is applied as the second argument:
 
-We can declare special methods on the component class to run some code when a component mounts and unmounts:
+// Correct
+` this.setState((state, props) => ({ counter: state.counter + props.increment }));`
+We used an arrow function above, but it also works with regular functions:
 
-#Let’s quickly recap what’s going on and the order in which the methods are called:
+// Correct
+`this.setState(function(state, props) { return { counter: state.counter + props.increment }; });`
 
-1. When <Clock /> is passed to ReactDOM.render(), React calls the constructor of the Clock component. Since Clock needs to display the current time, it initializes this.state with an object including the current time. We will later update this state.
-2. React then calls the Clock component’s render() method. This is how React learns what should be displayed on the screen. React then updates the DOM to match the Clock’s render output.
-3. When the Clock output is inserted in the DOM, React calls the componentDidMount() lifecycle method. Inside it, the Clock component asks the browser to set up a timer to call the component’s tick() method once a second.
-4. Every second the browser calls the tick() method. Inside it, the Clock component schedules a UI update by calling setState() with an object containing the current time. Thanks to the setState() call, React knows the state has changed, and calls the render() method again to learn what should be on the screen. This time, this.state.date in the render() method will be different, and so the render output will include the updated time. React updates the DOM accordingly.
-5. If the Clock component is ever removed from the DOM, React calls the componentWillUnmount() lifecycle method so the timer is stopped.
+# State Updates are Merged
+
+When you call setState(), React merges the object you provide into the current state.
+
+For example, your state may contain several independent variables:
+
+`constructor(props) { super(props); this.state = { posts: [], comments: [] }; }`
+Then you can update them independently with separate setState() calls:
+
+` componentDidMount() { fetchPosts().then(response => { this.setState({ posts: response.posts }); });`
+
+` fetchComments().then(response => { this.setState({ comments: response.comments }); }); }`
+The merging is shallow, so this.setState({comments}) leaves this.state.posts intact, but completely replaces this.state.comments.
+
+# The Data Flows Down
+
+Neither parent nor child components can know if a certain component is stateful or stateless, and they shouldn’t care whether it is defined as a function or a class.
+
+This is why state is often called local or encapsulated. It is not accessible to any component other than the one that owns and sets it.
+
+A component may choose to pass its state down as props to its child components:
+
+`<FormattedDate date={this.state.date} />`
+The FormattedDate component would receive the date in its props and wouldn’t know whether it came from the Clock’s state, from the Clock’s props, or was typed by hand:
+
+`function FormattedDate(props) { return <h2>It is {props.date.toLocaleTimeString()}.</h2>; }`
+
+This is commonly called a “top-down” or “unidirectional” data flow. Any state is always owned by some specific component, and any data or UI derived from that state can only affect components “below” them in the tree.
+
+If you imagine a component tree as a waterfall of props, each component’s state is like an additional water source that joins it at an arbitrary point but also flows down.
+
+# In React apps, whether a component is stateful or stateless is considered an implementation detail of the component that may change over time. You can use stateless components inside stateful components, and vice versa.

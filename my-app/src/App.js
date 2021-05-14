@@ -1,25 +1,9 @@
 import React from "react";
 import "./App.css";
 
-// This part of code nbeeds to be enter in Index.js
-// ==============================================================
-// function Clock(props) {
-//   return (
-//     <div>
-//       <h1>Hello, world!</h1>
-//       <h2>It is {props.date.toLocaleTimeString()}.</h2>
-//     </div>
-//   );
-// }
-
-// function tick() {
-//   ReactDOM.render(
-//     <Clock date={new Date()} />,
-//     document.getElementById('root')
-//   );
-// }
-// setInterval(tick, 1000);
-// ==============================================================
+function FormattedDate(props) {
+  return <h2>It is {props.date.toLocaleTimeString()}.</h2>;
+}
 
 class Clock extends React.Component {
   //Added locale state to class
@@ -50,7 +34,7 @@ class Clock extends React.Component {
     return (
       <div>
         <h1>Hello, world!</h1>
-        <h2>It is {this.state.date.toLocaleTimeString()}</h2>
+        <FormattedDate date={this.state.date} />
       </div>
     );
   }
