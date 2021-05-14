@@ -1,3 +1,4 @@
+import React from "react";
 import "./App.css";
 
 const App = () => {
@@ -24,7 +25,20 @@ const App = () => {
 
   // Specifying attributes in jsx
   // const element = <div tabIndex="0"></div>;
-  const element = <img src={user.avatarUrl} alt="Anyimage" />;
+  // const element = <img src={user.avatarUrl} alt="Anyimage" />
+
+  // childrens
+
+  // const element = (
+  //   <div>
+  //     <h1>Hello!</h1>
+  //     <h2>Good to see you here.</h2>
+  //   </div>
+  // );
+
+  // prevent Injection attack
+  // const title = response.potentiallyMaliciousInput;
+  // const element = <h1>{title}</h1>;
 
   return <>{element}</>;
 };
