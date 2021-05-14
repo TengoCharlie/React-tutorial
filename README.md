@@ -2,7 +2,7 @@
 
 ## Other way to emmbedd conditions in JSX
 
-`function Mailbox(props) {
+```function Mailbox(props) {
 const unreadMessages = props.unreadMessages;
 return (
 
@@ -21,7 +21,9 @@ const messages = ['React', 'Re: React', 'Re:Re: React'];
 ReactDOM.render(
 <Mailbox unreadMessages={messages} />,
 document.getElementById('root')
-);`
+);
+```
+
 It works because in JavaScript, true && expression always evaluates to expression, and false && expression always evaluates to false.
 
 Therefore, if the condition is true, the element right after && will appear in the output. If it is false, React will ignore and skip it.
