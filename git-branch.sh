@@ -24,7 +24,7 @@ if [ "$addFileDefaultTemp" != "" ]; then
 fi
 
 if [ "$commitMessageTemp" != "" ]; then
-    echo -e "Your Commit message is: $addFileDefaultTemp"
+    echo -e "Your Commit message is: $commitMessageTemp"
     commitMessage=$commitMessageTemp
 fi
 
@@ -32,7 +32,7 @@ if [ "$branchNameTemp" != "" ]; then
     echo -e "Your Branch name is: $branchNameTemp"
     branchName=$branchNameTemp
 fi
-if [ "$upStreamTemp" == "Y" || "$upStreamTemp" == "y" ]; then
+if [ "$upStreamTemp" == "Y" ] || [ "$upStreamTemp" == "y" ]; then
     echo -e "Your --set-upstream branch is: --set-upstream"
     upStream="--set-upstream"
 fi
