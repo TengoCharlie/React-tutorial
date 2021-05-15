@@ -1,112 +1,31 @@
-# Forms
+# Lifting State Up
 
-```javascript
-<form>
-  <label>
-    Name:
-    <input type="text" name="name" />
-  </label>
-  <input type="submit" value="Submit" />
-</form>
-```
+Often, several components need to reflect the same changing data. We recommend lifting the shared state up to their closest common ancestor. Let’s see how this works in action.
 
-This form has the default HTML form behavior of browsing to a new page when the user submits the form. If you want this behavior in React, it just works. But in most cases, it’s convenient to have a JavaScript function that handles the submission of the form and has access to the data that the user entered into the form. The standard way to achieve this is with a technique called “controlled components".
+However, we want these two inputs to be in sync with each other. When we update the Celsius input, the Fahrenheit input should reflect the converted temperature, and vice versa.
 
-## Controlled Components
+In React, sharing state is accomplished by moving it up to the closest common ancestor of the components that need it. This is called “lifting state up”. We will remove the local state from the TemperatureInput and move it into the Calculator instead.
 
-In HTML, form elements such as `<input>`, `<textarea>`, and `<select>` typically maintain their own state and update it based on user input. In React, mutable state is typically kept in the state property of components, and only updated with `setState()`.
+Now, no matter which input you edit, `this.state.temperature` and `this.state.scale` in the Calculator get updated. One of the inputs gets the value as is, so any user input is preserved, and the other input value is always recalculated based on it.
 
-We can combine the two by making the React state be the “single source of truth”. Then the React component that renders a form also controls what happens in that form on subsequent user input. An input form element whose value is controlled by React in this way is called a “controlled component”.
+Let’s recap what happens when you edit an input:
 
-### Option drop down in HTML and JSX
+React calls the function specified as `onChange` on the DOM `<input>`. In our case, this is the `handleChange` method in the `TemperatureInput` component.
+The handleChange method in the TemperatureInput component calls `this.props.onTemperatureChange()` with the new desired value. Its `props`, including `onTemperatureChange`, were provided by its parent component, the Calculator.
+When it previously rendered, the Calculator had specified that`onTemperatureChange`of the Celsius `TemperatureInput` is the Calculator’s `handleCelsiusChange` method, and `onTemperatureChange` of the Fahrenheit `TemperatureInput` is the Calculator’s `handleFahrenheitChange` method. So either of these two Calculator methods gets called depending on which input we edited.
+Inside these methods, the Calculator component asks React to re-render itself by calling `this.setState()` with the new input value and the current scale of the input we just edited.
+React calls the Calculator component’s render method to learn what the UI should look like. The values of both inputs are recomputed based on the current temperature and the active scale. The temperature conversion is performed here.
+React calls the render methods of the individual `TemperatureInput` components with their new props specified by the Calculator. It learns what their UI should look like.
+React calls the render method of the `BoilingVerdict` component, passing the temperature in Celsius as its props.
+React DOM updates the DOM with the boiling verdict and to match the desired input values. The input we just edited receives its current value, and the other input is updated to the temperature after conversion.
+Every update goes through the same steps so the inputs stay in sync.
 
-Note that the Coconut option is initially selected, because of the selected attribute. React, instead of using this selected attribute, uses a value attribute on the root select tag. This is more convenient in a controlled component because you only need to update it in one place
+## Lessons Learned
 
-```javascript
-<select>
-  <option value="grapefruit">Grapefruit</option>
-  <option value="lime">Lime</option>
-  <option selected value="coconut">
-    Coconut
-  </option>
-  <option value="mango">Mango</option>
-</select>
-```
+There should be a single “source of truth” for any data that changes in a React application. Usually, the state is first added to the component that needs it for rendering. Then, if other components also need it, you can lift it up to their closest common ancestor. Instead of trying to sync the state between different components, you should rely on the top-down data flow.
 
-```javascript
-class FlavorForm extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { value: "coconut" };
+Lifting state involves writing more “boilerplate” code than two-way binding approaches, but as a benefit, it takes less work to find and isolate bugs. Since any state “lives” in some component and that component alone can change it, the surface area for bugs is greatly reduced. Additionally, you can implement any custom logic to reject or transform user input.
 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
+If something can be derived from either props or state, it probably shouldn’t be in the state. For example, instead of storing both celsiusValue and fahrenheitValue, we store just the last edited temperature and its scale. The value of the other input can always be calculated from them in the `render()` method. This lets us clear or apply rounding to the other field without losing any precision in the user input.
 
-  handleChange(event) {
-    this.setState({ value: event.target.value });
-  }
-
-  handleSubmit(event) {
-    alert("Your favorite flavor is: " + this.state.value);
-    event.preventDefault();
-  }
-
-  render() {
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <label>
-          Pick your favorite flavor:
-          <select value={this.state.value} onChange={this.handleChange}>
-            <option value="grapefruit">Grapefruit</option>
-            <option value="lime">Lime</option>
-            <option value="coconut">Coconut</option>
-            <option value="mango">Mango</option>
-          </select>
-        </label>
-        <input type="submit" value="Submit" />
-      </form>
-    );
-  }
-}
-```
-
-## `<select multiple={true} value={['B', 'C']}>`
-
-## Handle Multiple inputs in Form
-
-When you need to handle multiple controlled input elements, you can add a name attribute to each element and let the handler function choose what to do based on the value of `event.target.name`.
-
-Note how we used the ES6 computed property name syntax to update the state key corresponding to the given input name:
-
-```javascript
-this.setState({ [name]: value })`
-It is equivalent to this ES5 code:
-```
-
-```javascript
-var partialState = {};
-partialState[name] = value;
-this.setState(partialState);
-```
-
-Also, since setState() automatically merges a partial state into the current state, we only needed to call it with the changed parts.
-
-## Controlled Input Null Value
-
-Specifying the value prop on a controlled component prevents the user from changing the input unless you desire so. If you’ve specified a value but the input is still editable, you may have accidentally set value to undefined or null.
-
-The following code demonstrates this. (The input is locked at first but becomes editable after a short delay.)
-
-```javascript
-ReactDOM.render(<input value="hi" />, mountNode);
-
-setTimeout(function () {
-  ReactDOM.render(<input value={null} />, mountNode);
-}, 1000);
-
-// mountNode is where the input field will mount eg--> mountNode = document.getElementbyId("root")
-```
-
-Fully-Fledged Solutions
-If you’re looking for a complete solution including validation, keeping track of the visited fields, and handling form submission, [Formik](https://jaredpalmer.com/formik) is one of the popular choices. However, it is built on the same principles of controlled components and managing state — so don’t neglect to learn them.
+When you see something wrong in the UI, you can use React Developer Tools to inspect the props and move up the tree until you find the component responsible for updating the state. This lets you trace the bugs to their source:
